@@ -1,13 +1,13 @@
 package com.mycompany.stockfreezer;
-
-import com.mycompany.stockfreezer.logica.Cajon;
-import com.mycompany.stockfreezer.logica.Controladora;
-import com.mycompany.stockfreezer.logica.Producto;
-import com.mycompany.stockfreezer.persistencia.ControladoraPersistencia;
+import com.mycompany.stockfreezer.logica.MenuPrincipal;
 
 public class StockFreezer {
 
     public static void main(String[] args) {
         
+        MenuPrincipal menu = new MenuPrincipal();
+        
+        menu.ejecutar();
     }
+        
 }

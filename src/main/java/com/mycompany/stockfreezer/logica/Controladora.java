@@ -84,4 +84,8 @@ public class Controladora {
         
         return "Error: Cajón LLENO.";
     }
+    
+    public Cajon traerCajon(int id) {
+        return controlPersis.traerCajonConProductos(id);
+    }
 }
