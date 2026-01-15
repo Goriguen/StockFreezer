@@ -107,4 +107,8 @@ public class Controladora {
     public Cajon traerCajon(int id) {
         return controlPersis.traerCajonConProductos(id);
     }
+    
+    public ControladoraPersistencia getControlPersis() {
+    return controlPersis;
+    }
 }

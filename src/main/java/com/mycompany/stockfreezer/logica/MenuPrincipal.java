@@ -126,7 +126,6 @@ public class MenuPrincipal {
                 }
 
                 if (encontrado != null) {
-                    // Magia: Sacamos el TIPO (Ej: CARNE), lo hacemos String y tomamos la letra 0
                     char inicial = encontrado.getTipo().toString().charAt(0);
                     System.out.print("[" + inicial + "]"); 
                 } else {
