@@ -1,6 +1,8 @@
 package com.mycompany.stockfreezer.logica;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,6 +19,10 @@ public class Producto implements Serializable {
     
     private String nombre;
     
+    // Acá se guarda el Enum como texto ("CARNE", "PESCADO", etc.)
+    @Enumerated(EnumType.STRING)
+    private TipoProducto tipo;
+    
     // COORDENADAS DE LA MATRIZ
     private int fila;
     private int columna;
@@ -29,11 +35,24 @@ public class Producto implements Serializable {
     public Producto() {
     }
 
-    public Producto(String nombre, int fila, int columna) {
+    // Constructor para crear productos NUEVOS (Sin ID ni Cajón todavía)
+    public Producto(String nombre, TipoProducto tipo, int fila, int columna) {
         this.nombre = nombre;
+        this.tipo = tipo;
         this.fila = fila;
         this.columna = columna;
     }
+    
+    //Constructor para rescatar valores en la BD (Productos creados)
+    public Producto(int id, String nombre, TipoProducto tipo, int fila, int columna, Cajon cajon) {
+        this.id = id;
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.fila = fila;
+        this.columna = columna;
+        this.cajon = cajon;
+    }
+
 
     // GETTERS & SETTERS
     
@@ -71,8 +90,9 @@ public class Producto implements Serializable {
 
     @Override
     public String toString() {
-        return "Producto{" + "id=" + id + ", nombre=" + nombre + ", fila=" + fila + ", columna=" + columna + ", cajon=" + cajon + '}';
+        return "Producto{" + "id=" + id + ", nombre=" + nombre + ", tipo=" + tipo + ", fila=" + fila + ", columna=" + columna + ", cajon=" + cajon + '}';
     }
+
 
     public Cajon getCajon() {
         return cajon;
@@ -81,5 +101,15 @@ public class Producto implements Serializable {
     public void setCajon(Cajon cajon) {
         this.cajon = cajon;
     }
+
+    public TipoProducto getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoProducto tipo) {
+        this.tipo = tipo;
+    }
+    
+    
        
 }

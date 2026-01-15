@@ -10,7 +10,7 @@ public class MenuPrincipal {
 
     public void ejecutar() {
         int opcion = 0;
-        int idCajon = 1; // Uso del cajón 1 únicamentep por ahora (hardcoded)
+        int idCajon = 1; // Uso del cajón 1 únicamente por ahora (hardcoded)
 
         System.out.println("=== SISTEMA STOCK FREEZER v1.0 ===");
 
@@ -45,10 +45,53 @@ public class MenuPrincipal {
     }
 
     private void ingresarProducto(int idCajon) {
+        System.out.println("\n--- NUEVO INGRESO ---");
         System.out.print("Nombre del producto: ");
         String nombre = teclado.nextLine();
         
-        String resultado = control.agregarProductoAutomatico(new Producto(nombre, 0, 0), idCajon);
+        // Guardar la elección del usuario
+        TipoProducto tipoSeleccionado = null;
+        boolean entradaValida = false;
+
+        // Validación
+        while (!entradaValida) {
+            System.out.println("Seleccione el Tipo de Producto:");
+            
+            // opciones del Enum
+            int index = 1;
+            for (TipoProducto t : TipoProducto.values()) {
+                System.out.println(index + ". " + t);
+                index++;
+            }
+            // Salir / cancelar el proceso
+            System.out.println("0. Cancelar / Volver al Menú");
+            
+            System.out.print("Opción: ");
+            
+            try {
+                int opcion = Integer.parseInt(teclado.nextLine());
+
+                if (opcion == 0) {
+                    System.out.println(">> Operación Cancelada. No se guardó nada.");
+                    return;
+                }
+                if (opcion >= 1 && opcion <= TipoProducto.values().length) {
+                    tipoSeleccionado = TipoProducto.values()[opcion - 1];
+                    entradaValida = true;
+                } 
+                else {
+                    System.out.println(">>> ERROR: La opción " + opcion + " no existe. Elija entre 0 y " + TipoProducto.values().length);
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println(">>> ERROR: Debe ingresar un NÚMERO. No escriba texto.");
+            }
+        }
+
+        // CREACIÓN Y GUARDADO
+        Producto nuevoProd = new Producto(nombre, tipoSeleccionado, 0, 0);
+        
+        String resultado = control.agregarProductoAutomatico(nuevoProd, idCajon);
         System.out.println("REPORTE: " + resultado);
     }
 
@@ -67,12 +110,12 @@ public class MenuPrincipal {
 
         // Doble bucle para DIBUJAR la matriz en consola
         for (int f = 0; f < c.getNumeroFila(); f++) {
-            System.out.print("Fila " + f + " | "); // Decoración de fila
+            System.out.print("Fila " + f + " | ");
             
             for (int col = 0; col < c.getNumeroColumna(); col++) {
                 boolean ocupado = false;
                 
-                // ¿Hay algoe en la coordenada?
+                // ¿Hay algo en la coordenada?
                 if (ocupados != null) {
                     for (Producto p : ocupados) {
                         if (p.getFila() == f && p.getColumna() == col) {
@@ -88,7 +131,7 @@ public class MenuPrincipal {
                     System.out.print("[ ]"); // Libre
                 }
             }
-            System.out.println(); // Salto de línea al terminar la fila
+            System.out.println();
         }
         System.out.println("Referencias: [ ] Libre, [X] Ocupado");
     }
