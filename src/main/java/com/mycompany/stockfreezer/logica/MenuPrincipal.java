@@ -100,8 +100,7 @@ public class MenuPrincipal {
         Cajon c = control.traerCajon(idCajon);
 
         if (c == null) {
-            System.out.println("¡Alerta! El Cajón ID " + idCajon + " no existe en la BD.");
-            System.out.println("Tip: Ejecuta el código de creación inicial o revisa la BD.");
+            System.out.println("Error: No se encontró el cajón.");
             return;
         }
 
@@ -113,26 +112,30 @@ public class MenuPrincipal {
             System.out.print("Fila " + f + " | ");
             
             for (int col = 0; col < c.getNumeroColumna(); col++) {
-                boolean ocupado = false;
+                // Guarda el objeto
+                Producto encontrado = null;
                 
                 // ¿Hay algo en la coordenada?
                 if (ocupados != null) {
                     for (Producto p : ocupados) {
                         if (p.getFila() == f && p.getColumna() == col) {
-                            ocupado = true;
+                            encontrado = p; // Encontrado: se guarda quién es
                             break;
                         }
                     }
                 }
 
-                if (ocupado) {
-                    System.out.print("[X]"); // Ocupado
+                if (encontrado != null) {
+                    // Magia: Sacamos el TIPO (Ej: CARNE), lo hacemos String y tomamos la letra 0
+                    char inicial = encontrado.getTipo().toString().charAt(0);
+                    System.out.print("[" + inicial + "]"); 
                 } else {
-                    System.out.print("[ ]"); // Libre
+                    System.out.print("[ ]"); 
                 }
             }
             System.out.println();
         }
-        System.out.println("Referencias: [ ] Libre, [X] Ocupado");
+        //Referencias
+        System.out.println("Referencias: [ ] Libre, [C]arne, [P]escado, [H]ielo, [M]asa, etc.");
     }
 }
