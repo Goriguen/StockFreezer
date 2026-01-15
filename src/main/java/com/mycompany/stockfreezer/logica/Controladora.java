@@ -55,6 +55,25 @@ public class Controladora {
         
         List<Producto> ocupados = cajon.getListaProductos();
         
+        // =================================================================
+        // --- REGLA ANTI-CONTAMINACIÓN ---
+        // =================================================================
+        
+        // Si hay productos, verificamos que el nuevo sea del mismo TIPO.
+        if (ocupados != null && !ocupados.isEmpty()) {
+            // Toma el primer producto como referencia del cajón
+            TipoProducto tipoDelCajon = ocupados.get(0).getTipo();
+            
+            // Si son diferentes tipos -> Inválido
+            if (nuevoProd.getTipo() != tipoDelCajon) {
+                return "ERROR: El cajón es de " + tipoDelCajon + 
+                       " y no podés mezclarlo con " + nuevoProd.getTipo();
+            }
+        }
+        // =================================================================
+        // --- FIN REGLA 
+        // =================================================================
+        
         // Doble Bucle: Recorre Filas y Columnas
         for (int f = 0; f < cajon.getNumeroFila(); f++) {
             for (int c = 0; c < cajon.getNumeroColumna(); c++) {
