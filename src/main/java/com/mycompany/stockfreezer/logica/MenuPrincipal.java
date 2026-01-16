@@ -8,96 +8,138 @@ public class MenuPrincipal {
     private Controladora control = new Controladora();
     private Scanner teclado = new Scanner(System.in);
 
+    // --- NIVEL 1: (Selección de Cajón) ---
     public void ejecutar() {
-        int opcion = 0;
-        int idCajon = 1; // Uso del cajón 1 únicamente por ahora (hardcoded)
+        boolean continuar = true;
 
-        System.out.println("=== SISTEMA STOCK FREEZER v1.0 ===");
-
-        while (opcion != 3) {
-            System.out.println("\n--------------------------");
-            System.out.println("1. Ingresar Producto (Auto)");
-            System.out.println("2. Ver Mapa del Freezer");
-            System.out.println("3. Salir");
-            System.out.print(">> Seleccione: ");
+        System.out.println("=== SISTEMA STOCK FREEZER v1.1 ===");
+        
+        while (continuar) {
+            System.out.println("\n--- PANEL GENERAL ---");
+            System.out.println("1. Seleccionar un Cajón para operar");
+            System.out.println("2. Salir del Sistema");
+            System.out.print(">> Opción: ");
             
-            try {
-                opcion = Integer.parseInt(teclado.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Error: Ingrese un número válido.");
-                continue;
-            }
-
+            int opcion = leerNumero();
+            
             switch (opcion) {
                 case 1:
-                    ingresarProducto(idCajon);
+                    seleccionarCajon(); // Pantalla de selección
                     break;
                 case 2:
-                    mostrarMapa(idCajon);
-                    break;
-                case 3:
-                    System.out.println("Cerrando sistema...");
+                    System.out.println("Cerrando sistema... ¡Hasta luego!");
+                    continuar = false;
                     break;
                 default:
                     System.out.println("Opción incorrecta.");
             }
         }
     }
+    
+    private void seleccionarCajon() {
+        // 1. Trae la lista de todos los cajones desde la BD
+        List<Cajon> lista = control.traerCajones();
+        
+        System.out.println("\n--- LISTA DE CAJONES DISPONIBLES ---");
+        System.out.println("ID  | NOMBRE             | TAMAÑO");
+        System.out.println("------------------------------------");
+        
+        // Muestra la tabla para que el usuario sepa qué ID elegir
+        for (Cajon c : lista) {
+            System.out.printf("%-3d | %-18s | %d x %d %n", 
+                    c.getId(), c.getNombre(), c.getNumeroFila(), c.getNumeroColumna());
+        }
+        
+        System.out.print("\n>> Ingrese el ID del cajón a operar (0 para volver): ");
+        int idSeleccionado = leerNumero();
+        
+        if (idSeleccionado == 0) return;
 
-    private void ingresarProducto(int idCajon) {
-        System.out.println("\n--- NUEVO INGRESO ---");
+        // Valida que el cajón exista
+        Cajon cajonElegido = control.traerCajon(idSeleccionado);
+        
+        if (cajonElegido != null) {
+            // Si existe, continúa al Nivel 2 con este cajón específico
+            gestionarCajon(cajonElegido);
+        } else {
+            System.out.println(">>> Error: No existe un cajón con ID " + idSeleccionado);
+        }
+    }
+
+    // --- NIVEL 2: OPERACIONES (Trabajar DENTRO de un cajón) ---
+    private void gestionarCajon(Cajon cajonActual) {
+        boolean volver = false;
+        
+        System.out.println("\n>>> OPERANDO EN: " + cajonActual.getNombre());
+
+        while (!volver) {
+            System.out.println("\n1. Ingresar Producto");
+            System.out.println("2. Ver Mapa del Cajón");
+            System.out.println("3. Volver al Panel General (Cambiar de Cajón)");
+            System.out.print(">> Seleccione: ");
+            
+            int op = leerNumero();
+            
+            switch (op) {
+                case 1:
+                    ingresarProducto(cajonActual); // Le pasamos EL cajón actual
+                    break;
+                case 2:
+                    mostrarMapa(cajonActual);
+                    break;
+                case 3:
+                    volver = true; // Rompe este bucle y vuelve a ejecutar
+                    break;
+                default:
+                    System.out.println("Opción inválida.");
+            }
+        }
+    }
+
+    //    Métodos AUXILIARES
+    
+    private void ingresarProducto(Cajon cajon) {
+        
+        System.out.println("\n--- NUEVO INGRESO en " + cajon.getNombre() + " ---");
         System.out.print("Nombre del producto: ");
         String nombre = teclado.nextLine();
         
-        // Guardar la elección del usuario
         TipoProducto tipoSeleccionado = null;
         boolean entradaValida = false;
 
-        // Validación
+        // Validación estricta del Enum
         while (!entradaValida) {
             System.out.println("Seleccione el Tipo de Producto:");
-            
-            // opciones del Enum
             int index = 1;
             for (TipoProducto t : TipoProducto.values()) {
                 System.out.println(index + ". " + t);
                 index++;
             }
-            // Salir / cancelar el proceso
-            System.out.println("0. Cancelar / Volver al Menú");
-            
+            System.out.println("0. Cancelar");
             System.out.print("Opción: ");
             
-            try {
-                int opcion = Integer.parseInt(teclado.nextLine());
+            int opcion = leerNumero();
 
-                if (opcion == 0) {
-                    System.out.println(">> Operación Cancelada. No se guardó nada.");
-                    return;
-                }
-                if (opcion >= 1 && opcion <= TipoProducto.values().length) {
-                    tipoSeleccionado = TipoProducto.values()[opcion - 1];
-                    entradaValida = true;
-                } 
-                else {
-                    System.out.println(">>> ERROR: La opción " + opcion + " no existe. Elija entre 0 y " + TipoProducto.values().length);
-                }
-
-            } catch (NumberFormatException e) {
-                System.out.println(">>> ERROR: Debe ingresar un NÚMERO. No escriba texto.");
+            if (opcion == 0) return;
+            
+            if (opcion >= 1 && opcion <= TipoProducto.values().length) {
+                tipoSeleccionado = TipoProducto.values()[opcion - 1];
+                entradaValida = true;
+            } else {
+                System.out.println("Opción incorrecta.");
             }
         }
 
         // CREACIÓN Y GUARDADO
         Producto nuevoProd = new Producto(nombre, tipoSeleccionado, 0, 0);
         
-        String resultado = control.agregarProductoAutomatico(nuevoProd, idCajon);
+        String resultado = control.agregarProductoAutomatico(nuevoProd, cajon.getId());
         System.out.println("REPORTE: " + resultado);
     }
 
-    private void mostrarMapa(int idCajon) {
+    private void mostrarMapa(Cajon cajon) {
         // Trae el cajón con productos desde la BD
-        Cajon c = control.traerCajon(idCajon);
+        Cajon c = control.traerCajon(cajon.getId());
 
         if (c == null) {
             System.out.println("Error: No se encontró el cajón.");
@@ -136,5 +178,14 @@ public class MenuPrincipal {
         }
         //Referencias
         System.out.println("Referencias: [ ] Libre, [C]arne, [P]escado, [H]ielo, [M]asa, etc.");
+    }
+    
+    // Helper para evitar errores si ingresan texto en vez de números
+    private int leerNumero() {
+        try {
+            return Integer.parseInt(teclado.nextLine());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 }
