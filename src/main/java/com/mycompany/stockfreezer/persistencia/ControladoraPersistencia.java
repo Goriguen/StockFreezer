@@ -46,4 +46,9 @@ public class ControladoraPersistencia {
     public Cajon traerCajonConProductos(int id) {
         return cajonJpa.findCajonConProductos(id);
     }
+    
+    // Método para borrar físico (DELETE)
+    public void borrarProducto(int idProducto) {
+        prodJpa.destroy(idProducto); // El JPA Controller ya suele tener el método destroy
+    }
 }

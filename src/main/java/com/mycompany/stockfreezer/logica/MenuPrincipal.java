@@ -82,13 +82,17 @@ public class MenuPrincipal {
             
             switch (op) {
                 case 1:
-                    ingresarProducto(cajonActual); // Le pasamos EL cajón actual
+                    ingresarProducto(cajonActual);
                     break;
                 case 2:
                     mostrarMapa(cajonActual);
                     break;
-                case 3:
-                    volver = true; // Rompe este bucle y vuelve a ejecutar
+                case 3: 
+                    // NUEVA OPCIÓN
+                    retirarProducto(cajonActual);
+                    break;
+                case 4: // (Antes era 3)
+                    volver = true;
                     break;
                 default:
                     System.out.println("Opción inválida.");
@@ -187,5 +191,26 @@ public class MenuPrincipal {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+    
+    private void retirarProducto(Cajon cajon) {
+        System.out.println("\n--- RETIRO DE MERCADERÍA en " + cajon.getNombre() + " ---");
+        
+        // Valida coordenadas lógicas (que no pida Fila 99)
+        System.out.print("Ingrese Fila (0 a " + (cajon.getNumeroFila() - 1) + "): ");
+        int fila = leerNumero();
+        
+        System.out.print("Ingrese Columna (0 a " + (cajon.getNumeroColumna() - 1) + "): ");
+        int col = leerNumero();
+        
+        // Validación básica de rango
+        if (fila < 0 || fila >= cajon.getNumeroFila() || col < 0 || col >= cajon.getNumeroColumna()) {
+            System.out.println(">>> ERROR: Coordenadas fuera de rango del cajón.");
+            return;
+        }
+
+        // Llamada a la Controladora
+        String resultado = control.retirarProducto(cajon.getId(), fila, col);
+        System.out.println(">>> REPORTE: " + resultado);
     }
 }

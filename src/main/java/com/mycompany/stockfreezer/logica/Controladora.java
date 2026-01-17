@@ -111,4 +111,33 @@ public class Controladora {
     public ControladoraPersistencia getControlPersis() {
     return controlPersis;
     }
+    
+    public String retirarProducto(int idCajon, int fila, int columna) {
+        // 1. Trae el cajón con sus productos actuales
+        Cajon cajon = controlPersis.traerCajonConProductos(idCajon);
+        
+        if (cajon == null) return "Error: Cajón no encontrado.";
+        
+        List<Producto> lista = cajon.getListaProductos();
+        Producto productoAborrar = null;
+        
+        // 2. Busca si hay algo en esas coordenadas
+        if (lista != null) {
+            for (Producto p : lista) {
+                if (p.getFila() == fila && p.getColumna() == columna) {
+                    productoAborrar = p;
+                    break;
+                }
+            }
+        }
+        
+        // 3. Ejecuta
+        if (productoAborrar != null) {
+            // Importante: Borra por ID único, no por coordenada
+            controlPersis.borrarProducto(productoAborrar.getId());
+            return "ÉXITO: Se retiró " + productoAborrar.getNombre() + " de [" + fila + "][" + columna + "]";
+        } else {
+            return "ERROR: No hay ningún producto en la posición [" + fila + "][" + columna + "]";
+        }
+    }
 }

@@ -63,4 +63,32 @@ public class ProductoJpaController implements Serializable {
             em.close();
         }
     }
+    
+    // Se agrega este método de forma manual
+    // no estaba creado anteriormente
+    public void destroy(int id) {
+    EntityManager em = null;
+    try {
+        em = getEntityManager(); // Obtiene la conexión
+        em.getTransaction().begin(); // Inicia la transacción
+        
+        Producto producto;
+        try {
+            // Intenta buscar la referencia del producto
+            producto = em.getReference(Producto.class, id);
+            producto.getId(); // Verifica que exista
+        } catch (Exception enfe) {
+            throw new RuntimeException("El producto con id " + id + " no existe.", enfe);
+        }
+        
+        // Borra
+        em.remove(producto);
+        
+        em.getTransaction().commit(); // Guarda los cambios
+    } finally {
+        if (em != null) {
+            em.close(); // Cierra la conexión siempre
+        }
+    }
+}
 }
