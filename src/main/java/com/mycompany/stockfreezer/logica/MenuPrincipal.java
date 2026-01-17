@@ -75,7 +75,8 @@ public class MenuPrincipal {
         while (!volver) {
             System.out.println("\n1. Ingresar Producto");
             System.out.println("2. Ver Mapa del Cajón");
-            System.out.println("3. Volver al Panel General (Cambiar de Cajón)");
+            System.out.println("3. Retirar Producto"); 
+            System.out.println("4. Volver al Panel General");
             System.out.print(">> Seleccione: ");
             
             int op = leerNumero();
@@ -88,10 +89,9 @@ public class MenuPrincipal {
                     mostrarMapa(cajonActual);
                     break;
                 case 3: 
-                    // NUEVA OPCIÓN
                     retirarProducto(cajonActual);
                     break;
-                case 4: // (Antes era 3)
+                case 4:
                     volver = true;
                     break;
                 default:
